@@ -18,9 +18,6 @@ from losses.hybrid_loss import HybridLoss
 from utils.metrics import dice_score, iou_score
 from datasets.busi_dataset import BUSIDataset
 
-# =========================================================
-# CONFIG
-# =========================================================
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 SEED = 42
 
@@ -61,10 +58,6 @@ USE_SCHEDULER = True
 SCHEDULER_PATIENCE = 5
 SCHEDULER_FACTOR = 0.5
 
-
-# =========================================================
-# REPRODUCIBILITY
-# =========================================================
 def set_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
@@ -76,9 +69,6 @@ def set_seed(seed=42):
 
 
 
-# =========================================================
-# FILE PAIRING
-# =========================================================
 def get_sorted_file_list(folder, valid_exts=(".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff")):
     files = [
         os.path.join(folder, f)
@@ -100,10 +90,6 @@ def build_image_mask_pairs(image_dir, mask_dir):
 
     return list(zip(image_paths, mask_paths))
 
-
-# =========================================================
-# METRICS
-# =========================================================
 def pixel_accuracy(pred_bin, mask):
     correct = (pred_bin == mask).float().sum()
     total = torch.numel(pred_bin)
@@ -125,10 +111,6 @@ def recall_score(pred_bin, mask, eps=1e-7):
     fn = ((1 - pred_bin) * mask).sum()
     return (tp + eps) / (tp + fn + eps)
 
-
-# =========================================================
-# HELPERS
-# =========================================================
 def ensure_dir(path):
     os.makedirs(path, exist_ok=True)
 
@@ -171,10 +153,6 @@ def align_mask_to_pred(pred, mask):
         mask = F.interpolate(mask, size=pred.shape[-2:], mode="nearest")
     return mask
 
-
-# =========================================================
-# TRAIN / VALIDATE
-# =========================================================
 def run_one_epoch_train(model, loader, optimizer, criterion, epoch, grad_clip, threshold):
     model.train()
     running_loss = 0.0
@@ -307,10 +285,6 @@ def run_one_epoch_val(model, loader, criterion, epoch, threshold=0.5):
         "pred_max": max(pred_max_all) if len(pred_max_all) > 0 else 0.0,
     }
 
-
-# =========================================================
-# ONE FOLD TRAINING
-# =========================================================
 def train_one_fold(fold_idx, train_samples, val_samples, config, run_dir):
     fold_dir = os.path.join(run_dir, f"fold_{fold_idx+1}")
     ensure_dir(fold_dir)
@@ -492,10 +466,6 @@ def train_one_fold(fold_idx, train_samples, val_samples, config, run_dir):
 
     return fold_summary, history
 
-
-# =========================================================
-# CROSS VALIDATION RUN
-# =========================================================
 def run_cross_validation(config, run_name="single_run"):
     set_seed(SEED)
 
@@ -570,10 +540,6 @@ def run_cross_validation(config, run_name="single_run"):
 
     return avg_summary
 
-
-# =========================================================
-# GRID SEARCH
-# =========================================================
 def run_grid_search():
     param_combos = get_param_combinations(GRID_SEARCH_SPACE)
 
@@ -611,10 +577,6 @@ def run_grid_search():
     print("GRID SEARCH COMPLETE")
     print("#" * 100)
 
-
-# =========================================================
-# MAIN
-# =========================================================
 if __name__ == "__main__":
     ensure_dir(SAVE_ROOT)
     set_seed(SEED)
