@@ -11,9 +11,6 @@ from decoder import MambaDecoderBlock
 from decoder import MambaDecoderBlockV2
 
 
-# =========================================================
-# Helper blocks
-# =========================================================
 class ConvBNAct(nn.Module):
     def __init__(self, in_ch, out_ch, k=3, s=1, p=1, dropout=0.0):
         super().__init__()
@@ -52,10 +49,6 @@ class TokenToMap(nn.Module):
 
         return x.transpose(1, 2).reshape(B, D, self.H, self.W)
 
-
-# =========================================================
-# HybridSegNetStable
-# =========================================================
 class HybridSegNetStable(nn.Module):
     def __init__(
         self,
@@ -75,9 +68,6 @@ class HybridSegNetStable(nn.Module):
         self.out_channels = out_channels
         self.logit_scale = logit_scale
 
-        # -----------------------------------------------------
-        # Encoder
-        # -----------------------------------------------------
         self.encoder = ViTEncoder()
         self.token2map = TokenToMap(img_size=img_size, patch_size=patch_size)
 
@@ -163,9 +153,6 @@ class HybridSegNetStable(nn.Module):
             drop_path=drop_path,
         )
 
-        # -----------------------------------------------------
-        # Final refinement head
-        # -----------------------------------------------------
         self.refine = nn.Sequential(
             ConvBNAct(64, 64, k=3, p=1, dropout=dropout),
             ConvBNAct(64, 32, k=3, p=1, dropout=dropout),
@@ -181,40 +168,25 @@ class HybridSegNetStable(nn.Module):
     def forward(self, x):
         H, W = x.shape[2:]
 
-        # -----------------------------------------------------
-        # Encoder tokens
-        # -----------------------------------------------------
         f1, f2, f3, f4, f5 = self.encoder(x)
 
-        # -----------------------------------------------------
-        # Token -> map
-        # -----------------------------------------------------
         f1 = self.token2map(f1)
         f2 = self.token2map(f2)
         f3 = self.token2map(f3)
         f4 = self.token2map(f4)
         f5 = self.token2map(f5)
-
-        # -----------------------------------------------------
-        # Channel reduction
-        # -----------------------------------------------------
+        
         f1 = self.reduce1(f1)   # [B,  64, Ht, Wt]
         f2 = self.reduce2(f2)   # [B,  96, Ht, Wt]
         f3 = self.reduce3(f3)   # [B, 160, Ht, Wt]
         f4 = self.reduce4(f4)   # [B, 256, Ht, Wt]
         f5 = self.reduce5(f5)   # [B, 256, Ht, Wt]
-
-        # -----------------------------------------------------
-        # Decoder
-        # -----------------------------------------------------
+        
         d4 = self.dec4(f5, f4)   # -> 256
         d3 = self.dec3(d4, f3)   # -> 160
         d2 = self.dec2(d3, f2)   # -> 96
         d1 = self.dec1(d2, f1)   # -> 64
 
-        # -----------------------------------------------------
-        # Refinement + output
-        # -----------------------------------------------------
         out = self.refine(d1)
         out = self.final(out)
 
@@ -226,10 +198,6 @@ class HybridSegNetStable(nn.Module):
 
         return out
 
-
-# =========================================================
-# Test
-# =========================================================
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
