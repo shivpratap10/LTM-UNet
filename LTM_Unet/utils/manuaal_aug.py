@@ -1,31 +1,13 @@
 
-Image augmentation script
-
-Applies:
-- +90 and -90 rotation
-- horizontal and vertical flip
-- gaussian noise
-- brightness reduction (20%)
-
-Saves augmented images in the same folder with suffix names.
-"""
-
 import os
 import cv2
 import numpy as np
 
 
-# =========================
-# CONFIG
-# =========================
 IMAGE_FOLDER = r"your_image_folder_path"
 
 VALID_EXTS = (".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff")
 
-
-# =========================
-# AUGMENTATIONS
-# =========================
 def rotate_image(img, angle):
     if angle == 90:
         return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
@@ -56,10 +38,6 @@ def reduce_brightness(img, factor=0.8):
     img = np.clip(img, 0, 255)
     return img.astype(np.uint8)
 
-
-# =========================
-# MAIN AUGMENTATION
-# =========================
 def augment_and_save(image_path):
     img = cv2.imread(image_path)
     if img is None:
@@ -93,9 +71,6 @@ def augment_and_save(image_path):
     cv2.imwrite(base + "_dark" + ext, img_dark)
 
 
-# =========================
-# RUN
-# =========================
 def main():
     files = [
         f for f in os.listdir(IMAGE_FOLDER)
