@@ -2,7 +2,7 @@
 """
 Created on Fri Mar 20 12:37:16 2026
 
-@author: Santosh Prakash
+@author: Shivpratap Singh
 """
 
 import cv2
