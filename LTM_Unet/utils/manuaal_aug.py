@@ -1,12 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 28 11:25:45 2026
 
-@author: USER
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Image augmentation script
 
 Applies:
