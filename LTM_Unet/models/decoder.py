@@ -4,12 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from vssm import VisionMambaBlock
 from einops import rearrange
-# -*- coding: utf-8 -*-
 
-
-# =========================================================
-# Utilities
-# =========================================================
 class DropPath(nn.Module):
     def __init__(self, drop_prob: float = 0.0):
         super().__init__()
@@ -61,9 +56,6 @@ class ConvBNAct(nn.Module):
         return self.block(x)
 
 
-# =========================================================
-# Selective SSM
-# =========================================================
 class SelectiveSSM(nn.Module):
     def __init__(
         self,
@@ -166,10 +158,6 @@ class SelectiveSSM(nn.Module):
         y = self.dropout(y)
         return y
 
-
-# =========================================================
-# Directional Scan
-# =========================================================
 class DirectionalScan(nn.Module):
     def __init__(self, ssm_layer: SelectiveSSM, d_model: int, dropout=0.0):
         super().__init__()
@@ -206,10 +194,6 @@ class DirectionalScan(nn.Module):
         y = self.dropout(y)
         return y
 
-
-# =========================================================
-# Vision Mamba
-# =========================================================
 class VisionMambaBlock(nn.Module):
     def __init__(
         self,
@@ -279,10 +263,6 @@ class VisionMambaBlock2D(nn.Module):
         x_seq = self.block(x_seq, h, w)
         return rearrange(x_seq, "b (h w) c -> b c h w", h=h, w=w)
 
-
-# =========================================================
-# Skip Fusion
-# =========================================================
 class SkipFusion(nn.Module):
     """
     Lightweight gated skip fusion.
@@ -309,10 +289,6 @@ class SkipFusion(nn.Module):
         x = g * skip + (1.0 - g) * dec
         return self.out(x)
 
-
-# =========================================================
-# Decoder-ready block
-# =========================================================
 class MambaDecoderBlock(nn.Module):
     """
     Decoder-ready block for HybridSegNet.
@@ -395,11 +371,7 @@ class MambaDecoderBlock(nn.Module):
 # Better decoder block with explicit projected skip fusion
 # =========================================================
 class MambaDecoderBlockV2(nn.Module):
-    """
-    Recommended version.
-
-    This version explicitly projects skip to out_channels and fuses it again after Mamba refinement.
-    """
+   
     def __init__(
         self,
         dec_channels,
@@ -463,10 +435,6 @@ class MambaDecoderBlockV2(nn.Module):
 
         return x
 
-
-# =========================================================
-# Test
-# =========================================================
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
