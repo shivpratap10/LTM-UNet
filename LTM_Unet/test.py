@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 20 2026
-
-@author: Santosh Prakash
-Evaluation / Testing script for HybridSegNet on BUSI dataset
-"""
-
 import os
 import torch
 import torch.nn.functional as F
