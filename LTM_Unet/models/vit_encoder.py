@@ -1,26 +1,10 @@
 
-"""
-Novel ViT Encoder with:
-1. Local Positional Enhancement
-2. Gated Exponential Linear Attention
-3. Depthwise Token Mixing
-4. GEGLU Feed Forward
-5. LayerScale Stabilization
-6. Stage-wise Feature Refinement
-
-Input  : [B, C, H, W]
-Outputs: 5 stage features, each [B, N, embed_dim]
-"""
-
 import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-# =========================================================
-# Utility
-# =========================================================
 class DropPath(nn.Module):
     def __init__(self, drop_prob=0.0):
         super().__init__()
@@ -44,10 +28,6 @@ class LayerScale(nn.Module):
     def forward(self, x):
         return x * self.gamma
 
-
-# =========================================================
-# Patch Embedding with Local Positional Enhancement
-# =========================================================
 class PatchEmbedding(nn.Module):
     def __init__(self, img_size=256, patch_size=16, in_channels=3, embed_dim=320):
         super().__init__()
@@ -77,10 +57,6 @@ class PatchEmbedding(nn.Module):
         x = self.norm(x)
         return x
 
-
-# =========================================================
-# Token Mixing Module
-# =========================================================
 class DepthwiseTokenMixing(nn.Module):
     """
     Converts token sequence [B, N, C] -> spatial -> DWConv -> tokens
@@ -106,9 +82,6 @@ class DepthwiseTokenMixing(nn.Module):
         return feat
 
 
-# =========================================================
-# GEGLU Feed Forward
-# =========================================================
 class GEGLU(nn.Module):
     def __init__(self, dim, hidden_dim, dropout=0.0):
         super().__init__()
@@ -125,17 +98,8 @@ class GEGLU(nn.Module):
         return x
 
 
-# =========================================================
-# Novel Exponential Linear Attention
-# =========================================================
 class ExponentialLinearAttention(nn.Module):
-    """
-    Multi-head exponential linear attention with:
-    - gated value branch
-    - learnable head temperature
-    - token mixing enhancement
-    Output shape remains [B, N, C]
-    """
+
     def __init__(self, dim, num_heads=8, eps=1e-6, use_token_mixing=True):
         super().__init__()
         assert dim % num_heads == 0, "dim must be divisible by num_heads"
@@ -198,10 +162,6 @@ class ExponentialLinearAttention(nn.Module):
 
         return out + 0.0 * residual_tokens  # keeps graph compatible, no shape change
 
-
-# =========================================================
-# Stage Refinement
-# =========================================================
 class StageRefinement(nn.Module):
     """
     Lightweight refinement before stage output.
@@ -221,10 +181,6 @@ class StageRefinement(nn.Module):
         gated = self.proj(y) * self.gate(y)
         return x + gated
 
-
-# =========================================================
-# Transformer Block
-# =========================================================
 class TransformerBlock(nn.Module):
     def __init__(
         self,
@@ -255,10 +211,6 @@ class TransformerBlock(nn.Module):
         x = x + self.drop_path2(self.ls2(self.mlp(self.norm2(x))))
         return x
 
-
-# =========================================================
-# Novel ViT Encoder
-# =========================================================
 class ViTEncoder(nn.Module):
     def __init__(
         self,
