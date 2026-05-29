@@ -1,17 +1,4 @@
 
-# -*- coding: utf-8 -*-
-"""
-Full-fledged Vision Mamba block adapted from VSSM / SS2D style implementation.
-
-Requirements:
-- torch
-- einops
-- timm
-- mamba_ssm (for selective_scan_fn)
-
-If mamba_ssm is not installed, this module will raise a clear error.
-"""
-
 import math
 from functools import partial
 from typing import Callable, Optional
@@ -27,10 +14,6 @@ try:
 except Exception:
     selective_scan_fn = None
 
-
-# =========================================================
-# Core SS2D block
-# =========================================================
 class SS2D(nn.Module):
     def __init__(
         self,
@@ -247,10 +230,6 @@ class SS2D(nn.Module):
 
         return out
 
-
-# =========================================================
-# Residual Vision Mamba block
-# =========================================================
 class VisionMambaBlock(nn.Module):
     """
     A full residual Vision Mamba block using SS2D.
@@ -306,10 +285,6 @@ class VisionMambaBlock(nn.Module):
         out = x_perm.permute(0, 3, 1, 2).contiguous()        # [B, C, H, W]
         return out
 
-
-# =========================================================
-# Decoder-style block for segmentation use
-# =========================================================
 class MambaDecoderBlock(nn.Module):
     """
     Segmentation-friendly decoder block:
@@ -360,10 +335,6 @@ class MambaDecoderBlock(nn.Module):
         x = self.refine(x)
         return x
 
-
-# =========================================================
-# Simple sanity test
-# =========================================================
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
