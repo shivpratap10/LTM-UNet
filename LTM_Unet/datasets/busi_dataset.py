@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 20 12:37:16 2026
-
-@author: Shivpratap Singh
-"""
-
 import cv2
 import numpy as np
 from torch.utils.data import Dataset
