@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 Novel ViT Encoder with:
 1. Local Positional Enhancement
