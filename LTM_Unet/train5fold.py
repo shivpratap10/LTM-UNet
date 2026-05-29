@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-5-Fold Cross-Validation Training Script for HybridSegNet
-Updated for new BUSIDataset class with Albumentations-based train/val behavior
-
-Author: Santosh Prakash
-"""
-
 import os
 import copy
 import json
