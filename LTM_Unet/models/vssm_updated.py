@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 28 12:22:08 2026
-
-@author: USER
-"""
 
 # -*- coding: utf-8 -*-
 """
