@@ -11,9 +11,6 @@ from losses.hybrid_loss import HybridLoss
 from utils.metrics import dice_score, iou_score
 
 
-# =========================
-# Config
-# =========================
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 BATCH_SIZE = 1
 IMG_SIZE = 256
@@ -26,10 +23,6 @@ SAVE_PREDICTIONS = True
 PRED_SAVE_DIR = "test_predictions_dataset_B1"
 THRESHOLD = 0.5
 
-
-# =========================
-# Utility
-# =========================
 VALID_EXTS = (".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff")
 
 
@@ -114,10 +107,6 @@ def align_mask_to_pred(pred, mask):
         mask = F.interpolate(mask, size=pred.shape[-2:], mode="nearest")
     return mask
 
-
-# =========================
-# Dataset / Loader
-# =========================
 image_paths, mask_paths = build_matched_pairs(TEST_IMG_DIR, TEST_MASK_DIR)
 
 test_dataset = BUSIDataset(
@@ -134,10 +123,6 @@ test_loader = DataLoader(
     num_workers=0
 )
 
-
-# =========================
-# Model / Loss
-# =========================
 model = HybridSegNetStable().to(DEVICE)
 
 checkpoint = torch.load(MODEL_PATH, map_location=DEVICE)
@@ -150,16 +135,10 @@ model.eval()
 criterion = HybridLoss()
 
 
-# =========================
-# Prepare Save Folder
-# =========================
 if SAVE_PREDICTIONS:
     ensure_dir(PRED_SAVE_DIR)
 
 
-# =========================
-# Evaluation Loop
-# =========================
 test_loss = 0.0
 dice_avg = 0.0
 iou_avg = 0.0
@@ -197,9 +176,6 @@ with torch.no_grad():
             save_image(pred_sig, prob_path)
 
 
-# =========================
-# Final Results
-# =========================
 num_samples = len(test_loader)
 
 if num_samples == 0:
