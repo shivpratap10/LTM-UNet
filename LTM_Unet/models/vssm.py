@@ -3,10 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 
-
-# =========================================================
-# Utilities
-# =========================================================
 class DropPath(nn.Module):
     def __init__(self, drop_prob: float = 0.0):
         super().__init__()
@@ -42,10 +38,6 @@ class CausalConv1d(nn.Module):
             x = F.pad(x, (self.padding, 0))
         return self.conv(x)
 
-
-# =========================================================
-# Selective SSM
-# =========================================================
 class SelectiveSSM(nn.Module):
     """
     Sequence module:
@@ -185,10 +177,6 @@ class SelectiveSSM(nn.Module):
     def forward(self, x):
         return self.forward_once(x)
 
-
-# =========================================================
-# Directional 2D scanning
-# =========================================================
 class DirectionalScan(nn.Module):
     """
     Applies the same SelectiveSSM over:
@@ -242,10 +230,6 @@ class DirectionalScan(nn.Module):
         y = self.dropout(y)
         return y
 
-
-# =========================================================
-# Vision Mamba block
-# =========================================================
 class VisionMambaBlock(nn.Module):
     """
     Full vision block with:
@@ -303,10 +287,6 @@ class VisionMambaBlock(nn.Module):
         x = x + self.drop_path2(self.mlp(self.norm2(x)))
         return x
 
-
-# =========================================================
-# Optional 2D wrapper
-# =========================================================
 class VisionMambaBlock2D(nn.Module):
     """
     Convenience wrapper for feature maps.
@@ -342,10 +322,6 @@ class VisionMambaBlock2D(nn.Module):
         x_out = rearrange(x_seq, "b (h w) c -> b c h w", h=h, w=w)
         return x_out
 
-
-# =========================================================
-# Sanity test
-# =========================================================
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
